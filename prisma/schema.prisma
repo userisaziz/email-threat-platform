@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Email {
+  id         String   @id @default(uuid())
+  hash       String   @unique
+  subject    String?
+  sender     String
+  fraudScore Int
+  verdict    String
+  analyzedAt DateTime @default(now())
+  rawEml     String   @db.Text
+
+  ips       EmailIp[]
+  domains   EmailDomain[]
+  urls      EmailUrl[]
+  campaigns EmailCampaign[]
+
+  @@map("emails")
+}
+
+model EmailIp {
+  id            String   @id @default(uuid())
+  emailId       String
+  ip            String
+  country       String?
+  asn           String?
+  org           String?
+  abuseScore    Int?
+  abuseCheckedAt DateTime?
+  isOriginating Boolean  @default(false)
+
+  email Email @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("email_ips")
+}
+
+model EmailDomain {
+  id            String    @id @default(uuid())
+  emailId       String
+  domain        String
+  whoisAgeDays  Int?
+  registrar     String?
+  whoisCheckedAt DateTime?
+
+  email Email @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("email_domains")
+}
+
+model EmailUrl {
+  id      String @id @default(uuid())
+  emailId String
+  url     String @db.Text
+
+  email Email @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("email_urls")
+}
+
+model Campaign {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  emails EmailCampaign[]
+
+  @@map("campaigns")
+}
+
+model EmailCampaign {
+  emailId    String
+  campaignId String
+
+  email    Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@id([emailId, campaignId])
+  @@map("email_campaigns")
+}

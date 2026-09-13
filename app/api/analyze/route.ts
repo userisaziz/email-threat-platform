@@ -132,6 +132,10 @@ export async function POST(req: NextRequest) {
               sender: parsed.sender,
               fraudScore: score,
               verdict,
+              spf: parsed.auth.spf,
+              dkim: parsed.auth.dkim,
+              dmarc: parsed.auth.dmarc,
+              hfScore: classifyResult.phishingScore,
               rawEml: body,
             },
           });

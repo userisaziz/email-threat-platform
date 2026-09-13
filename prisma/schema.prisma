@@ -8,14 +8,18 @@ datasource db {
 }
 
 model Email {
-  id         String   @id @default(uuid())
-  hash       String   @unique
-  subject    String?
-  sender     String
-  fraudScore Int
-  verdict    String
-  analyzedAt DateTime @default(now())
-  rawEml     String   @db.Text
+  id          String   @id @default(uuid())
+  hash        String   @unique
+  subject     String?
+  sender      String
+  fraudScore  Int
+  verdict     String
+  spf         String   @default("none")
+  dkim        String   @default("none")
+  dmarc       String   @default("none")
+  hfScore     Float?
+  analyzedAt  DateTime @default(now())
+  rawEml      String   @db.Text
 
   ips       EmailIp[]
   domains   EmailDomain[]

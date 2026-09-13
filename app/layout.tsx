@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ShieldAlert } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
   title: "EmailThreat — Forensic Intelligence Platform",

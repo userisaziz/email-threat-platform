@@ -16,7 +16,7 @@ async function getRecentEmails() {
   });
 }
 
-function verdictVariant(verdict: string) {
+function verdictBadgeVariant(verdict: string) {
   if (verdict === "Fraudulent") return "destructive" as const;
   if (verdict === "Suspicious") return "warning" as const;
   return "success" as const;
@@ -52,7 +52,7 @@ async function RecentAnalyses() {
                 <p className="text-xs text-gray-500 font-mono truncate">{email.sender}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-4">
-                <Badge variant={verdictVariant(email.verdict)}>{email.fraudScore}</Badge>
+                <Badge variant={verdictBadgeVariant(email.verdict)}>{email.fraudScore}</Badge>
                 <span className="text-xs text-gray-600">{new Date(email.analyzedAt).toLocaleDateString()}</span>
               </div>
             </a>

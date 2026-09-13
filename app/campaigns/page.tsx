@@ -7,8 +7,6 @@ import { ShieldAlert, Shield, ShieldCheck, Network, Mail } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-type Verdict = "Legitimate" | "Suspicious" | "Fraudulent";
-
 async function getCampaigns() {
   return prisma.campaign.findMany({
     orderBy: { createdAt: "desc" },

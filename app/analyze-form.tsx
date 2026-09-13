@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Upload, Loader2, Shield, ShieldAlert, ShieldCheck, FileText, RotateCcw } from "lucide-react";
 
@@ -38,12 +37,6 @@ function VerdictIcon({ verdict }: { verdict: string }) {
   if (verdict === "Fraudulent") return <ShieldAlert className="w-6 h-6 text-red-400" />;
   if (verdict === "Suspicious") return <Shield className="w-6 h-6 text-yellow-400" />;
   return <ShieldCheck className="w-6 h-6 text-green-400" />;
-}
-
-function verdictVariant(verdict: string): "destructive" | "warning" | "success" {
-  if (verdict === "Fraudulent") return "destructive";
-  if (verdict === "Suspicious") return "warning";
-  return "success";
 }
 
 function completedSteps(steps: Step[]) {

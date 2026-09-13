@@ -375,7 +375,7 @@ export function ForensicReport({ email }: { email: EmailWithRelations }) {
               Model: facebook/bart-large-mnli (zero-shot classification)
             </Text>
             <Text style={{ marginBottom: 4 }}>
-              Labels: ["phishing", "legitimate"]
+              {`Labels: ["phishing", "legitimate"]`}
             </Text>
             <Text style={s.muted}>
               The NLP phishing confidence score contributes +15 to fraud score when {">"} 0.70.

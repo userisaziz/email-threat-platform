@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 type Verdict = "Legitimate" | "Suspicious" | "Fraudulent";
 
 async function getCampaigns() {
@@ -9,13 +11,7 @@ async function getCampaigns() {
       emails: {
         include: {
           email: {
-            select: {
-              id: true,
-              sender: true,
-              subject: true,
-              verdict: true,
-              fraudScore: true,
-              analyzedAt: true,
+            include: {
               ips: {
                 where: { isOriginating: true },
                 select: { ip: true, country: true, asn: true, org: true },
@@ -24,7 +20,6 @@ async function getCampaigns() {
             },
           },
         },
-        orderBy: { email: { analyzedAt: "desc" } },
       },
     },
   });

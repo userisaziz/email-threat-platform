@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import AnalyzeForm from "./analyze-form";
 
+export const dynamic = "force-dynamic";
+
 type Verdict = "Legitimate" | "Suspicious" | "Fraudulent";
 
 async function getRecentEmails() {

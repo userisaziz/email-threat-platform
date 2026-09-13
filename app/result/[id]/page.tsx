@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 type Verdict = "Legitimate" | "Suspicious" | "Fraudulent";
 
 async function getEmail(id: string) {

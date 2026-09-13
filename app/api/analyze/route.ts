@@ -186,15 +186,13 @@ export async function POST(req: NextRequest) {
 
         send({ step: "complete", emailId, verdict, score });
       } catch (err) {
-        controller.enqueue(
-          encoder.encode(
-            sse({
-              step: "error",
-              message:
-                err instanceof Error ? err.message : "Unexpected error",
-            })
-          )
-        );
+        const raw = err instanceof Error ? err.message : "Unexpected error";
+        // Sanitize: don't expose internal Prisma or connection errors to the client
+        const isPrismaError = raw.includes("prisma") || raw.includes("database") || raw.includes("denied access");
+        const message = isPrismaError
+          ? "Database error — check server configuration"
+          : raw;
+        controller.enqueue(encoder.encode(sse({ step: "error", message })));
       } finally {
         controller.close();
       }

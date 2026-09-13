@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const campaigns = await prisma.campaign.findMany({
     orderBy: { createdAt: "desc" },
@@ -8,13 +10,6 @@ export async function GET() {
       emails: {
         include: {
           email: {
-            select: {
-              id: true,
-              sender: true,
-              verdict: true,
-              fraudScore: true,
-              analyzedAt: true,
-            },
             include: {
               ips: {
                 where: { isOriginating: true },

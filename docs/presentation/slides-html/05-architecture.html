@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.arch-body { display: flex; gap: 24px; flex: 1; margin-top: 16px; }
+.left-col { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.right-col { width: 380px; display: flex; flex-direction: column; gap: 12px; }
+
+.sse-event {
+  background: #010409; border: 1px solid #30363D; border-radius: 6px;
+  padding: 8px 14px; font-family: 'Courier New', monospace; font-size: 12px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.sse-event .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.sse-event .line { color: #C9D1D9; }
+.sse-event .key  { color: #79C0FF; }
+.sse-event .val  { color: #A5D6FF; }
+.sse-event .val.ok  { color: #56d364; }
+.sse-event .val.err { color: #FF7B72; }
+.sse-event .val.warn{ color: #d29922; }
+
+.tech-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tech-pill {
+  background: #161B22; border: 1px solid #30363D; border-radius: 20px;
+  padding: 5px 14px; font-size: 12px; color: #8B949E; font-weight: 600;
+}
+.tech-pill.blue { color: #93C5FD; border-color: rgba(37,99,235,0.3); }
+
+.info-box {
+  background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2);
+  border-left: 3px solid #10B981; border-radius: 6px; padding: 10px 14px;
+  font-size: 14px; color: #C9D1D9; line-height: 1.5;
+}
+.info-box strong { color: #6EE7B7; }
+
+.db-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.db-table {
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 6px; padding: 7px 10px; font-size: 11px;
+  font-family: 'Courier New', monospace; color: #FCD34D; text-align: center;
+}
+
+.sec-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #8B949E; margin-bottom: 6px; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">System Architecture</span>
+    <span class="slide-num" style="margin-left:auto">05 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">A <span class="accent">six-stage SSE pipeline</span> circumvents serverless timeouts — each stage emits a live event as it completes</h2>
+    <div class="arch-body">
+      <div class="left-col">
+        <div class="sec-label">Pipeline stages</div>
+        <div class="pipeline" style="gap:6px">
+          <div class="pipe-step active" style="padding:12px 10px">
+            <div class="pipe-num">01</div>
+            <div class="pipe-name">Parse Headers</div>
+            <div class="pipe-desc">.eml → hops, auth signals, URLs</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step" style="padding:12px 10px">
+            <div class="pipe-num">02</div>
+            <div class="pipe-name">Geolocate IPs</div>
+            <div class="pipe-desc">Promise.all parallel</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step" style="padding:12px 10px">
+            <div class="pipe-num">03</div>
+            <div class="pipe-name">AI + WHOIS</div>
+            <div class="pipe-desc">Parallel — no wait</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step" style="padding:12px 10px">
+            <div class="pipe-num">04</div>
+            <div class="pipe-name">AbuseIPDB</div>
+            <div class="pipe-desc">Originating IP only</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step" style="padding:12px 10px">
+            <div class="pipe-num">05</div>
+            <div class="pipe-name">Fraud Score</div>
+            <div class="pipe-desc">Weighted 5-signal</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step" style="padding:12px 10px">
+            <div class="pipe-num">06</div>
+            <div class="pipe-name">DB + Campaign</div>
+            <div class="pipe-desc">$transaction + union-find</div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <strong>Why SSE?</strong> Vercel serverless functions timeout at 10 seconds.
+          SSE <code>ReadableStream</code> keeps the connection open past 10s while streaming live events — analysts see real-time progress, not a blank spinner.
+        </div>
+
+        <div class="sec-label">Tech stack</div>
+        <div class="tech-row">
+          <span class="tech-pill blue">Next.js 14 App Router</span>
+          <span class="tech-pill blue">Prisma v5</span>
+          <span class="tech-pill blue">Supabase PostgreSQL</span>
+          <span class="tech-pill">HuggingFace API</span>
+          <span class="tech-pill">ipinfo.io</span>
+          <span class="tech-pill">AbuseIPDB</span>
+          <span class="tech-pill">whoiser</span>
+          <span class="tech-pill">@react-pdf/renderer</span>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="sec-label">Live SSE stream output</div>
+        <div class="sse-event"><div class="dot" style="background:#3B82F6"></div><div class="line"><span class="key">"step"</span>:<span class="val">"headers"</span>, <span class="key">"spf"</span>:<span class="val err">"fail"</span>, <span class="key">"hopCount"</span>:<span class="val">1</span></div></div>
+        <div class="sse-event"><div class="dot" style="background:#10B981"></div><div class="line"><span class="key">"step"</span>:<span class="val">"geolocation"</span>, <span class="key">"hops"</span>:<span class="val ok">1</span></div></div>
+        <div class="sse-event"><div class="dot" style="background:#F59E0B"></div><div class="line"><span class="key">"step"</span>:<span class="val">"classification"</span>, <span class="key">"status"</span>:<span class="val warn">"unavailable"</span></div></div>
+        <div class="sse-event"><div class="dot" style="background:#10B981"></div><div class="line"><span class="key">"step"</span>:<span class="val">"whois"</span>, <span class="key">"ageDays"</span>:<span class="val">null</span></div></div>
+        <div class="sse-event"><div class="dot" style="background:#EF4444"></div><div class="line"><span class="key">"step"</span>:<span class="val">"reputation"</span>, <span class="key">"abuseScore"</span>:<span class="val err">100</span></div></div>
+        <div class="sse-event" style="border-color: rgba(220,38,38,0.4); background: rgba(220,38,38,0.05)"><div class="dot" style="background:#EF4444"></div><div class="line"><span class="key">"step"</span>:<span class="val">"complete"</span>, <span class="key">"verdict"</span>:<span class="val err">"Fraudulent"</span>, <span class="key">"score"</span>:<span class="val err">65</span></div></div>
+
+        <div class="sec-label">Database schema (6 tables)</div>
+        <div class="db-grid">
+          <div class="db-table">emails</div>
+          <div class="db-table">email_ips</div>
+          <div class="db-table">email_domains</div>
+          <div class="db-table">email_urls</div>
+          <div class="db-table">campaigns</div>
+          <div class="db-table">email_campaigns</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

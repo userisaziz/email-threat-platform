@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.score-formula {
+  background: #010409; border: 1px solid #30363D; border-radius: 8px;
+  padding: 16px 24px; font-family: 'Courier New', monospace; font-size: 15px;
+  color: #E6EDF3; text-align: center; margin: 14px 0;
+  line-height: 1.8;
+}
+.score-formula .term { color: #79C0FF; font-weight: 700; }
+.score-formula .pts  { color: #8B949E; font-size: 13px; }
+.score-formula .plus { color: #3B82F6; }
+.score-formula .total{ color: #10B981; font-weight: 800; }
+
+.verdict-row { display: flex; gap: 16px; margin: 8px 0; }
+.verdict-card {
+  flex: 1; border-radius: 10px; padding: 20px;
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+}
+.verdict-card.legit { background: rgba(16,185,129,0.1); border: 1.5px solid rgba(16,185,129,0.3); }
+.verdict-card.susp  { background: rgba(245,158,11,0.1); border: 1.5px solid rgba(245,158,11,0.3); }
+.verdict-card.fraud { background: rgba(220,38,38,0.12); border: 1.5px solid rgba(220,38,38,0.3); }
+.verdict-card .vname { font-size: 22px; font-weight: 800; }
+.verdict-card.legit .vname { color: #10B981; }
+.verdict-card.susp  .vname { color: #F59E0B; }
+.verdict-card.fraud .vname { color: #EF4444; }
+.verdict-card .vrange { font-size: 16px; font-weight: 600; }
+.verdict-card.legit .vrange { color: #6EE7B7; }
+.verdict-card.susp  .vrange { color: #FCD34D; }
+.verdict-card.fraud .vrange { color: #FCA5A5; }
+.verdict-card .vex { font-size: 12px; color: #8B949E; text-align: center; line-height: 1.4; }
+
+.rules-row { display: flex; gap: 14px; }
+.rule-box {
+  flex: 1; background: #161B22; border: 1px solid #30363D; border-radius: 8px; padding: 14px;
+}
+.rule-box.red { border-left: 3px solid #DC2626; background: rgba(220,38,38,0.06); }
+.rule-box .rtitle { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8B949E; margin-bottom: 8px; }
+.rule-box.red .rtitle { color: #FCA5A5; }
+.rule-box .rbody { font-size: 13px; color: #C9D1D9; line-height: 1.5; }
+.rule-box .rbody code { font-family: 'Courier New', monospace; color: #A5D6FF; font-size: 12px; background: #010409; padding: 1px 5px; border-radius: 3px; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Fraud Score Engine</span>
+    <span class="slide-num" style="margin-left:auto">09 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">A weighted five-signal fraud score classifies emails as Legitimate, Suspicious, or Fraudulent — <span class="accent">each layer contributes independently</span></h2>
+    <div class="score-formula">
+      Score = <span class="term">SPF<span class="pts">(20)</span></span>
+      <span class="plus">+</span> <span class="term">DKIM<span class="pts">(20)</span></span>
+      <span class="plus">+</span> <span class="term">DMARC<span class="pts">(15)</span></span>
+      <span class="plus">+</span> <span class="term">DomainAge<span class="pts">(20)</span></span>
+      <span class="plus">+</span> <span class="term">HFClassifier<span class="pts">(15)</span></span>
+      <span class="plus">+</span> <span class="term">AbuseIPDB<span class="pts">(10)</span></span>
+      &nbsp;&nbsp;|&nbsp;&nbsp;<span class="total">max = 100</span>
+    </div>
+    <div class="verdict-row">
+      <div class="verdict-card legit">
+        <div class="vname">Legitimate</div>
+        <div class="vrange">Score 0 – 39</div>
+        <div class="vex">Low risk. Minor signals present<br>but no strong indicators.</div>
+      </div>
+      <div class="verdict-card susp">
+        <div class="vname">Suspicious</div>
+        <div class="vrange">Score 40 – 59</div>
+        <div class="vex">Multiple signals triggered.<br>Manual review recommended.</div>
+      </div>
+      <div class="verdict-card fraud">
+        <div class="vname">Fraudulent</div>
+        <div class="vrange">Score 60 – 100</div>
+        <div class="vex">Strong multi-signal consensus.<br>Block and investigate.</div>
+      </div>
+    </div>
+    <div class="rules-row">
+      <div class="rule-box red">
+        <div class="rtitle">Triple-auth-fail floor rule</div>
+        <div class="rbody">If SPF + DKIM + DMARC all fail → score = <code>max(40, computed_score)</code><br>Guarantees at least <strong>Suspicious</strong> verdict. Prevents clean IP from masking unauthenticated sender.</div>
+      </div>
+      <div class="rule-box">
+        <div class="rtitle">Signal independence</div>
+        <div class="rbody">Signals are additive and independent. Spear-phish with valid DMARC still scored by AI + domain age + AbuseIPDB. No single signal required to reach Fraudulent.</div>
+      </div>
+      <div class="rule-box">
+        <div class="rtitle">Deduplication</div>
+        <div class="rbody">SHA-256 hash of raw .eml detects duplicates. Same email resubmitted returns cached result instantly — no re-analysis, no API calls.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

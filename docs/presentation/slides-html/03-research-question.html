@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.rq-box {
+  background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(59,130,246,0.06));
+  border: 1.5px solid rgba(59,130,246,0.4);
+  border-radius: 14px;
+  padding: 32px 40px;
+  margin: 20px 0;
+}
+.rq-text {
+  font-size: 26px; font-weight: 600; color: #E6EDF3; line-height: 1.5;
+  text-align: center;
+}
+.rq-text em { color: #93C5FD; font-style: normal; }
+.gap-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.gap-table th {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: #8B949E; padding: 8px 16px; text-align: left;
+  border-bottom: 1px solid #30363D;
+}
+.gap-table td { padding: 10px 16px; font-size: 15px; color: #C9D1D9; border-bottom: 1px solid rgba(48,54,61,0.4); }
+.gap-table td:first-child { color: #FCA5A5; font-weight: 600; }
+.gap-table td .arrow { color: #3B82F6; margin: 0 6px; }
+.contribution {
+  background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 8px; padding: 14px 20px; margin-top: 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.contribution .label { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #10B981; }
+.contribution .value { font-size: 16px; color: #C9D1D9; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Research Question</span>
+    <span class="slide-num" style="margin-left:auto">03 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:20px">
+    <h2 class="slide-title" style="font-size:28px">Current tools detect but cannot explain — single-signal blockers leave analysts without attribution, hop traces, or campaign linkage</h2>
+    <div class="rq-box">
+      <div class="rq-text">
+        Can <em>five independent signal layers</em> — authentication, geolocation, AI classification,<br>
+        IP reputation, and WHOIS intelligence — be fused in <em>real time</em><br>
+        to produce investigator-grade forensic reports?
+      </div>
+    </div>
+    <table class="gap-table">
+      <thead>
+        <tr><th>Signal gap</th><th>Threat it misses</th><th>Our solution</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Auth-only check</td><td>Spear-phish with valid DMARC passes silently</td><td>4 additional independent layers</td></tr>
+        <tr><td>No relay trace</td><td>Origin country / Tor exit node unknown</td><td>ipinfo.io parallel geolocation</td></tr>
+        <tr><td>No domain age</td><td>Typosquat registered yesterday looks legitimate</td><td>WHOIS + 30-day threshold</td></tr>
+        <tr><td>No campaign view</td><td>Coordinated attacks appear isolated</td><td>Union-find clustering per analysis</td></tr>
+      </tbody>
+    </table>
+    <div class="contribution">
+      <span class="label">Our contribution</span>
+      <span class="value">First real-time, multi-signal forensic pipeline with PDF report generation and campaign clustering — deployable on serverless infrastructure</span>
+    </div>
+  </div>
+</div>
+</body></html>

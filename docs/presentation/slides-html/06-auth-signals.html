@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.two-col-even { display: flex; gap: 24px; flex: 1; margin-top: 16px; }
+.left { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.right { width: 400px; display: flex; flex-direction: column; gap: 12px; }
+
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 12px; }
+.bar-label { width: 120px; font-size: 14px; color: #C9D1D9; flex-shrink: 0; text-align: right; }
+.bar-track { flex: 1; background: #161B22; border-radius: 4px; height: 28px; position: relative; overflow: hidden; border: 1px solid #30363D; }
+.bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; }
+.bar-fill span { font-size: 13px; font-weight: 700; color: white; }
+.bar-fill.b1 { width: 80%; background: linear-gradient(90deg, #2563EB, #3B82F6); }
+.bar-fill.b2 { width: 80%; background: linear-gradient(90deg, #1D4ED8, #2563EB); }
+.bar-fill.b3 { width: 60%; background: linear-gradient(90deg, #1E40AF, #1D4ED8); }
+.bar-fill.b4 { width: 80%; background: linear-gradient(90deg, #0F172A, #1E3A5F); border: 1px solid #30363D; }
+.bar-fill.b5 { width: 60%; background: linear-gradient(90deg, #7C3AED, #8B5CF6); }
+.bar-fill.b6 { width: 40%; background: linear-gradient(90deg, #DC2626, #EF4444); }
+
+.callout-red {
+  background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3);
+  border-left: 4px solid #DC2626; border-radius: 8px; padding: 14px 16px;
+}
+.callout-red .title { font-size: 13px; font-weight: 700; color: #FCA5A5; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+.auth-badge-row { display: flex; gap: 10px; }
+.auth-badge {
+  flex: 1; border-radius: 8px; padding: 12px; text-align: center;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.auth-badge.fail { background: rgba(220,38,38,0.12); border: 1px solid rgba(220,38,38,0.3); }
+.auth-badge.pass { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
+.auth-badge .name { font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+.auth-badge.fail .name { color: #FCA5A5; }
+.auth-badge.pass .name { color: #6EE7B7; }
+.auth-badge .status { font-size: 18px; font-weight: 800; }
+.auth-badge.fail .status { color: #EF4444; }
+.auth-badge.pass .status { color: #10B981; }
+.auth-badge .pts { font-size: 12px; color: #8B949E; }
+
+.key-finding {
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 8px; padding: 14px 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.key-finding .arrow { font-size: 24px; color: #F59E0B; flex-shrink: 0; line-height: 1; }
+.key-finding .text { font-size: 15px; color: #C9D1D9; line-height: 1.5; }
+.key-finding .text strong { color: #FCD34D; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Signal 1 — Authentication</span>
+    <span class="slide-num" style="margin-left:auto">06 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">SPF, DKIM, and DMARC triple-failure contributes <span class="danger">up to 55 of 100 fraud score points</span> — the single largest signal layer</h2>
+    <div class="two-col-even">
+      <div class="left">
+        <div class="bar-chart">
+          <div class="bar-row">
+            <div class="bar-label">SPF fail</div>
+            <div class="bar-track"><div class="bar-fill b1"><span>+20 pts</span></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">DKIM fail</div>
+            <div class="bar-track"><div class="bar-fill b2"><span>+20 pts</span></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">DMARC fail</div>
+            <div class="bar-track"><div class="bar-fill b3"><span>+15 pts</span></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Domain &lt;30d</div>
+            <div class="bar-track"><div class="bar-fill b4"><span>+20 pts</span></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">AI &gt;70%</div>
+            <div class="bar-track"><div class="bar-fill b5"><span>+15 pts</span></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">AbuseIPDB &gt;50%</div>
+            <div class="bar-track"><div class="bar-fill b6"><span>+10 pts</span></div></div>
+          </div>
+        </div>
+        <div class="key-finding">
+          <div class="arrow">↑</div>
+          <div class="text"><strong>Auth contributes 55/100 pts</strong> — the most of any signal. Instant: parsed from headers with zero API calls. NIST SP 800-177r1 validated weights.</div>
+        </div>
+      </div>
+      <div class="right">
+        <div style="font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#8B949E; margin-bottom:6px;">Our live test result</div>
+        <div class="auth-badge-row">
+          <div class="auth-badge fail"><div class="name">SPF</div><div class="status">FAIL</div><div class="pts">+20 pts</div></div>
+          <div class="auth-badge fail"><div class="name">DKIM</div><div class="status">FAIL</div><div class="pts">+20 pts</div></div>
+          <div class="auth-badge fail"><div class="name">DMARC</div><div class="status">FAIL</div><div class="pts">+15 pts</div></div>
+        </div>
+        <div class="callout-red">
+          <div class="title">Triple-fail floor rule</div>
+          <ul class="bullets" style="margin:0">
+            <li>If SPF + DKIM + DMARC all fail, score is floored to <strong>max(40, computed_score)</strong></li>
+            <li>Guarantees at least a <strong>Suspicious</strong> verdict regardless of other signals</li>
+            <li>Prevents a clean IP from masking a completely unauthenticated sender</li>
+          </ul>
+        </div>
+        <div class="code-block" style="font-size:12px">
+          <span class="kw">Authentication-Results:</span> mx.example.com;<br>
+          &nbsp;&nbsp;<span class="ok">dkim</span>=<span class="err">fail</span> header.d=paypa1-verify.com<br>
+          &nbsp;&nbsp;<span class="ok">spf</span>=<span class="err">fail</span> smtp.mailfrom=paypa1-verify.com<br>
+          &nbsp;&nbsp;<span class="ok">dmarc</span>=<span class="err">fail</span> header.from=paypa1-verify.com
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

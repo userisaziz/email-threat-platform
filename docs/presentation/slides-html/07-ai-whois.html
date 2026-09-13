@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.parallel-row { display: flex; gap: 16px; flex: 1; margin-top: 14px; }
+.par-box {
+  flex: 1; border-radius: 10px; padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.par-box.ai   { background: rgba(139,92,246,0.08); border: 1.5px solid rgba(139,92,246,0.3); }
+.par-box.whois{ background: rgba(16,185,129,0.08); border: 1.5px solid rgba(16,185,129,0.3); }
+.par-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.par-title.ai    { color: #C4B5FD; }
+.par-title.whois { color: #6EE7B7; }
+.par-box .detail-row { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 1.5; }
+.detail-row .key { color: #8B949E; width: 90px; flex-shrink: 0; font-weight: 600; }
+.detail-row .val { color: #C9D1D9; }
+.detail-row .val.purple { color: #C4B5FD; }
+.detail-row .val.green  { color: #6EE7B7; }
+.connect-bar {
+  background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
+  border-radius: 8px; padding: 12px 20px; display: flex; align-items: center; gap: 12px;
+  font-size: 14px; color: #C9D1D9;
+}
+.connect-bar .code { font-family: 'Courier New', monospace; color: #93C5FD; background: #010409; padding: 3px 8px; border-radius: 4px; font-size: 13px; }
+.resilience-row { display: flex; gap: 14px; margin-top: 8px; }
+.res-card {
+  flex: 1; background: #161B22; border: 1px solid #30363D; border-radius: 8px; padding: 12px 14px;
+}
+.res-card .res-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #8B949E; margin-bottom: 6px; }
+.res-card .res-body { font-size: 13px; color: #C9D1D9; line-height: 1.5; }
+.res-card .res-body strong { color: #FCD34D; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Signals 3 &amp; 4 — AI + WHOIS</span>
+    <span class="slide-num" style="margin-left:auto">07 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">AI zero-shot classification and WHOIS domain-age run <span class="accent">in parallel</span> — two independent layers added with <span class="accent">zero extra latency</span></h2>
+    <div class="connect-bar">
+      <span>Stage 3 runs both simultaneously:</span>
+      <span class="code">const [classifyResult, whoisResult] = await Promise.all([classifyPhishing(...), lookupWhois(...)])</span>
+    </div>
+    <div class="parallel-row">
+      <div class="par-box ai">
+        <div class="par-title ai">🤖 AI Phishing Classification</div>
+        <div class="detail-row"><span class="key">Model</span><span class="val purple">facebook/bart-large-mnli</span></div>
+        <div class="detail-row"><span class="key">Method</span><span class="val">Zero-shot classification — no labelled training data</span></div>
+        <div class="detail-row"><span class="key">Labels</span><span class="val purple font-mono">"phishing"  vs  "legitimate"</span></div>
+        <div class="detail-row"><span class="key">Input</span><span class="val">Email subject line + full body text</span></div>
+        <div class="detail-row"><span class="key">Threshold</span><span class="val">Score &gt; 0.70 → <strong style="color:#C4B5FD">+15 fraud points</strong></span></div>
+        <div class="detail-row"><span class="key">Stored</span><span class="val">Raw confidence score saved to DB as <code style="font-size:12px;color:#A5D6FF">hfScore</code></span></div>
+      </div>
+      <div class="par-box whois">
+        <div class="par-title whois">📅 WHOIS Domain Intelligence</div>
+        <div class="detail-row"><span class="key">Library</span><span class="val green">whoiser (Node.js)</span></div>
+        <div class="detail-row"><span class="key">Target</span><span class="val">Sender's From: domain</span></div>
+        <div class="detail-row"><span class="key">Metrics</span><span class="val">Registration date → age in days, registrar name</span></div>
+        <div class="detail-row"><span class="key">Threshold</span><span class="val">Domain &lt; 30 days old → <strong style="color:#6EE7B7">+20 fraud points</strong></span></div>
+        <div class="detail-row"><span class="key">Timeout</span><span class="val">5-second Promise.race — never blocks pipeline</span></div>
+        <div class="detail-row"><span class="key">Cache</span><span class="val">7-day DB cache per domain — preserves WHOIS rate limit</span></div>
+      </div>
+    </div>
+    <div class="resilience-row">
+      <div class="res-card">
+        <div class="res-title">HuggingFace cold start</div>
+        <div class="res-body">Marked <strong>status: "unavailable"</strong> — pipeline continues. Keep-alive GitHub Actions cron warms model every 3 days.</div>
+      </div>
+      <div class="res-card">
+        <div class="res-title">WHOIS null result</div>
+        <div class="res-body">New TLDs and ccTLDs often return null. Treated as <strong>zero contribution</strong> — not an error. No score penalty for unknown age.</div>
+      </div>
+      <div class="res-card">
+        <div class="res-title">Why zero-shot vs fine-tuned?</div>
+        <div class="res-body">Fine-tuning needs <strong>10K+ labelled samples</strong> + retraining. Zero-shot generalises instantly. Reported F1 ≈ 0.71 (Mishra &amp; Sharma, 2022).</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

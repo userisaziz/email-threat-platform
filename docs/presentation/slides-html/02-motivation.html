@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.stats-row { display: flex; gap: 16px; margin: 24px 0; }
+.stat-card {
+  flex: 1; background: #161B22; border: 1px solid #30363D; border-radius: 10px;
+  padding: 20px; text-align: center;
+}
+.stat-card .num { font-size: 44px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+.stat-card .num.blue { color: #3B82F6; }
+.stat-card .num.red  { color: #EF4444; }
+.stat-card .num.gold { color: #F59E0B; }
+.stat-card .num.green{ color: #10B981; }
+.stat-card .label { font-size: 12px; color: #8B949E; margin-top: 6px; line-height: 1.4; }
+.gap-box {
+  background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.25);
+  border-left: 4px solid #DC2626; border-radius: 8px;
+  padding: 18px 24px;
+}
+.gap-box .gap-title { font-size: 14px; font-weight: 700; color: #FCA5A5; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.gap-list { display: flex; flex-direction: column; gap: 8px; }
+.gap-item { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; color: #C9D1D9; line-height: 1.4; }
+.gap-item::before { content: '✗'; color: #EF4444; font-weight: 700; flex-shrink: 0; font-size: 13px; margin-top: 2px; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Situation &amp; Complication</span>
+    <span class="slide-num" style="margin-left:auto">02 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:24px">
+    <h2 class="slide-title">Email phishing caused <span class="danger">$3.5B in losses in 2023</span> — yet existing tools produce <span class="accent">no forensic intelligence</span> after blocking a threat</h2>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="num blue">3.4B</div>
+        <div class="label">phishing emails sent<br>per day globally</div>
+      </div>
+      <div class="stat-card">
+        <div class="num red">$3.5B</div>
+        <div class="label">total BEC &amp; phishing<br>losses, FBI IC3 2023</div>
+      </div>
+      <div class="stat-card">
+        <div class="num gold">83%</div>
+        <div class="label">of organisations suffered<br>a phishing attack in 2023</div>
+      </div>
+      <div class="stat-card">
+        <div class="num green">91%</div>
+        <div class="label">of all cyberattacks<br>start with a phishing email</div>
+      </div>
+    </div>
+    <div class="gap-box">
+      <div class="gap-title">What current tools leave out</div>
+      <div class="gap-list">
+        <div class="gap-item">No relay trace — analysts cannot see originating server, country, or ASN</div>
+        <div class="gap-item">No campaign linkage — coordinated multi-target attacks appear as isolated incidents</div>
+        <div class="gap-item">No forensic report — CERT teams have no court-admissible artifact</div>
+        <div class="gap-item">Single-signal blockers — one bypass (valid DMARC on spoofed domain) defeats the whole tool</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

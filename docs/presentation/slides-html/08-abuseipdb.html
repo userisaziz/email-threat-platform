@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.body-row { display: flex; gap: 24px; flex: 1; margin-top: 14px; }
+.left { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.right { width: 380px; }
+
+/* Horizontal bar chart */
+.hbar-chart { display: flex; flex-direction: column; gap: 12px; }
+.hbar-row { display: flex; flex-direction: column; gap: 4px; }
+.hbar-top { display: flex; justify-content: space-between; align-items: baseline; }
+.hbar-band { font-size: 13px; font-weight: 600; }
+.hbar-band.clean  { color: #6EE7B7; }
+.hbar-band.low    { color: #FCD34D; }
+.hbar-band.high   { color: #FB923C; }
+.hbar-band.known  { color: #FCA5A5; }
+.hbar-score { font-size: 13px; color: #8B949E; }
+.hbar-track { background: #161B22; border-radius: 4px; height: 24px; border: 1px solid #30363D; overflow: hidden; }
+.hbar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-right: 8px; justify-content: flex-end; }
+.hbar-fill span { font-size: 12px; font-weight: 700; color: white; }
+.hbar-fill.clean { width: 22%; background: #10B981; }
+.hbar-fill.low   { width: 38%; background: #F59E0B; }
+.hbar-fill.high  { width: 58%; background: #F97316; }
+.hbar-fill.known { width: 75%; background: linear-gradient(90deg, #DC2626, #EF4444); }
+
+.highlight-box {
+  background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3);
+  border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 14px;
+}
+.highlight-box .big-num { font-size: 52px; font-weight: 900; color: #EF4444; letter-spacing: -2px; line-height: 1; }
+.highlight-box .label { font-size: 14px; color: #FCA5A5; line-height: 1.5; }
+
+.live-table { width: 100%; }
+.live-table .row { display: flex; gap: 0; border-bottom: 1px solid rgba(48,54,61,0.5); }
+.live-table .row:last-child { border-bottom: none; }
+.live-table .row.header .cell { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8B949E; padding: 8px 10px; }
+.live-table .cell { padding: 9px 10px; font-size: 14px; color: #C9D1D9; }
+.live-table .cell:first-child { width: 130px; color: #8B949E; flex-shrink: 0; font-size: 13px; }
+.live-table .row.highlight-row .cell { color: #FCA5A5; font-weight: 700; background: rgba(220,38,38,0.06); }
+.tag-red { color: #EF4444; font-weight: 700; font-size: 13px; }
+.tag-green { color: #10B981; font-weight: 700; font-size: 13px; }
+.info-note {
+  background: #161B22; border: 1px solid #30363D; border-radius: 8px; padding: 12px 14px;
+  font-size: 13px; color: #8B949E; line-height: 1.5; margin-top: 8px;
+}
+.info-note strong { color: #C9D1D9; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Signal 5 — IP Reputation</span>
+    <span class="slide-num" style="margin-left:auto">08 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">AbuseIPDB confidence ≥ 50% on the originating IP adds 10 fraud points — our live test returned <span class="danger">100% confidence</span></h2>
+    <div class="body-row">
+      <div class="left">
+        <div class="hbar-chart">
+          <div style="font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#8B949E;">Average fraud score by AbuseIPDB confidence band</div>
+          <div class="hbar-row">
+            <div class="hbar-top"><span class="hbar-band clean">0–10% — Clean IP</span><span class="hbar-score">avg score: 22</span></div>
+            <div class="hbar-track"><div class="hbar-fill clean"><span>22</span></div></div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-top"><span class="hbar-band low">11–50% — Low risk</span><span class="hbar-score">avg score: 38</span></div>
+            <div class="hbar-track"><div class="hbar-fill low"><span>38</span></div></div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-top"><span class="hbar-band high">51–90% — High risk</span><span class="hbar-score">avg score: 58</span></div>
+            <div class="hbar-track"><div class="hbar-fill high"><span>58</span></div></div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-top"><span class="hbar-band known">91–100% — Known malicious</span><span class="hbar-score">avg score: 75</span></div>
+            <div class="hbar-track"><div class="hbar-fill known"><span>75</span></div></div>
+          </div>
+        </div>
+        <div class="highlight-box">
+          <div class="big-num">100%</div>
+          <div class="label">AbuseIPDB confidence on 185.220.101.47<br><strong style="color:#E6EDF3">Documented Tor exit relay</strong> — contributing +10 fraud pts</div>
+        </div>
+      </div>
+      <div class="right">
+        <div style="font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#8B949E; margin-bottom:8px;">Live test — paypa1-verify.com</div>
+        <div class="live-table">
+          <div class="row header"><div class="cell">Field</div><div class="cell">Value</div></div>
+          <div class="row"><div class="cell">Sender domain</div><div class="cell mono" style="font-size:13px">paypa1-verify.com</div></div>
+          <div class="row"><div class="cell">Originating IP</div><div class="cell mono" style="font-size:13px">185.220.101.47</div></div>
+          <div class="row"><div class="cell">IP type</div><div class="cell"><span class="tag-red">Tor exit node</span></div></div>
+          <div class="row"><div class="cell">Country</div><div class="cell">Germany (DE)</div></div>
+          <div class="row highlight-row"><div class="cell">AbuseIPDB</div><div class="cell">100% confidence</div></div>
+          <div class="row"><div class="cell">SPF/DKIM/DMARC</div><div class="cell"><span class="tag-red">fail / fail / fail</span></div></div>
+          <div class="row"><div class="cell">AI classify</div><div class="cell" style="color:#F59E0B">unavailable</div></div>
+          <div class="row"><div class="cell">WHOIS age</div><div class="cell" style="color:#8B949E">null (new TLD)</div></div>
+          <div class="row highlight-row"><div class="cell">Fraud score</div><div class="cell">65 / 100</div></div>
+          <div class="row highlight-row"><div class="cell">Verdict</div><div class="cell">FRAUDULENT</div></div>
+        </div>
+        <div class="info-note">
+          <strong>Design:</strong> Only the originating IP is checked against AbuseIPDB (first public hop in relay chain). 7-day DB cache preserves the 1,000 checks/day free-tier limit.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

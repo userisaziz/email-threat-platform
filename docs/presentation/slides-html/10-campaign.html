@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.body-row { display: flex; gap: 24px; flex: 1; margin-top: 14px; }
+.left { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.right { width: 380px; display: flex; flex-direction: column; gap: 12px; }
+
+.algo-steps { display: flex; flex-direction: column; gap: 8px; }
+.algo-step {
+  background: #161B22; border: 1px solid #30363D; border-radius: 8px;
+  padding: 11px 16px; display: flex; align-items: flex-start; gap: 12px;
+}
+.algo-step .step-num {
+  width: 24px; height: 24px; border-radius: 6px; background: rgba(37,99,235,0.2);
+  color: #93C5FD; font-size: 12px; font-weight: 700; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+}
+.algo-step .step-text { font-size: 14px; color: #C9D1D9; line-height: 1.4; }
+.algo-step .step-text strong { color: #E6EDF3; }
+
+.merge-diagram {
+  background: #161B22; border: 1px solid #30363D; border-radius: 10px;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.merge-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #8B949E; }
+.camp-row { display: flex; gap: 10px; }
+.camp-box {
+  flex: 1; border-radius: 8px; padding: 10px 12px; text-align: center;
+}
+.camp-box.blue  { background: rgba(37,99,235,0.12); border: 1px solid rgba(37,99,235,0.3); }
+.camp-box.blue2 { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); }
+.camp-box.new   { background: rgba(245,158,11,0.1); border: 1.5px dashed rgba(245,158,11,0.4); }
+.camp-box.merged{ background: rgba(220,38,38,0.1); border: 1.5px solid rgba(220,38,38,0.3); }
+.camp-box .camp-name { font-size: 13px; font-weight: 700; color: #E6EDF3; margin-bottom: 3px; }
+.camp-box .camp-emails { font-size: 12px; color: #8B949E; }
+.merge-arrow { text-align: center; font-size: 22px; color: #3B82F6; }
+.merge-note { font-size: 12px; color: #8B949E; text-align: center; line-height: 1.4; }
+
+.prop-row { display: flex; gap: 10px; }
+.prop-chip {
+  flex: 1; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 6px; padding: 8px 10px; font-size: 13px; color: #6EE7B7; text-align: center; line-height: 1.4;
+}
+
+.atomic-box {
+  background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 13px; color: #C9D1D9; line-height: 1.5;
+}
+.atomic-box strong { color: #C4B5FD; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Campaign Attribution</span>
+    <span class="slide-num" style="margin-left:auto">10 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">Union-find clustering groups emails sharing originating IPs or sender domains into <span class="accent">coordinated attack campaigns</span> in a single DB transaction</h2>
+    <div class="body-row">
+      <div class="left">
+        <div class="algo-steps">
+          <div class="algo-step">
+            <div class="step-num">1</div>
+            <div class="step-text">On each new email, query for existing emails sharing <strong>any public relay IP</strong> or the <strong>sender domain</strong></div>
+          </div>
+          <div class="algo-step">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Match found:</strong> new email joins the matching campaign immediately</div>
+          </div>
+          <div class="algo-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Multiple matches across different campaigns:</strong> all campaigns merged — lowest ID wins (union-find root). All <code style="font-family:monospace;font-size:12px;color:#A5D6FF">EmailCampaign</code> rows reparented to survivor</div>
+          </div>
+          <div class="algo-step">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>No match:</strong> new singleton campaign created for this email</div>
+          </div>
+        </div>
+        <div class="prop-row">
+          <div class="prop-chip">IP-based linking<br>any shared relay</div>
+          <div class="prop-chip">Domain-based linking<br>same From: domain</div>
+          <div class="prop-chip">Retroactive merge<br>past campaigns unified</div>
+        </div>
+        <div class="atomic-box"><strong>Atomic:</strong> All clustering runs inside a single Prisma <code style="font-family:monospace;font-size:12px;color:#A5D6FF">$transaction</code> — the DB write, IP insert, domain insert, URL insert, and campaign assignment either all succeed or all roll back.</div>
+      </div>
+      <div class="right">
+        <div class="merge-diagram">
+          <div class="merge-title">Campaign merge example</div>
+          <div class="camp-row">
+            <div class="camp-box blue">
+              <div class="camp-name">Campaign A</div>
+              <div class="camp-emails">Email 1 · Email 2</div>
+            </div>
+            <div class="camp-box blue2">
+              <div class="camp-name">Campaign B</div>
+              <div class="camp-emails">Email 3 · Email 4</div>
+            </div>
+          </div>
+          <div class="camp-row" style="justify-content:center">
+            <div class="camp-box new" style="max-width:220px">
+              <div class="camp-name" style="color:#FCD34D">Email 5 (new)</div>
+              <div class="camp-emails">Shares IP with A<br>Shares domain with B</div>
+            </div>
+          </div>
+          <div class="merge-arrow">↓ merge triggered</div>
+          <div class="camp-row" style="justify-content:center">
+            <div class="camp-box merged" style="width:100%">
+              <div class="camp-name" style="color:#FCA5A5">Campaign A (survivor)</div>
+              <div class="camp-emails">Emails 1, 2, 3, 4, 5 — lowest ID wins</div>
+            </div>
+          </div>
+          <div class="merge-note">Campaign B deleted. All rows reparented.</div>
+        </div>
+        <div style="background:#161B22;border:1px solid #30363D;border-radius:8px;padding:12px 14px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8B949E;margin-bottom:8px;">Result in UI</div>
+          <ul class="bullets" style="margin:0">
+            <li>Campaigns page shows all correlated emails grouped</li>
+            <li>Result page shows campaign attribution with email count</li>
+            <li>Coordinated attacks visible as clusters of 2+ emails</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

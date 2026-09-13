@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.signals-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+  margin: 20px 0; flex: 1;
+}
+.sig-card {
+  background: #161B22; border: 1px solid #30363D; border-radius: 10px;
+  padding: 18px 14px; display: flex; flex-direction: column; gap: 8px;
+  position: relative; overflow: hidden;
+}
+.sig-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.sig-card.blue::before  { background: #2563EB; }
+.sig-card.gold::before  { background: #F59E0B; }
+.sig-card.purple::before{ background: #8B5CF6; }
+.sig-card.green::before { background: #10B981; }
+.sig-card.red::before   { background: #DC2626; }
+.sig-icon { font-size: 28px; margin-bottom: 4px; }
+.sig-num { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #8B949E; }
+.sig-name { font-size: 15px; font-weight: 700; color: #E6EDF3; line-height: 1.2; }
+.sig-desc { font-size: 12px; color: #8B949E; line-height: 1.4; flex: 1; }
+.sig-pts {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  background: #0D1117; border: 1px solid #30363D;
+  border-radius: 20px; padding: 3px 10px; text-align: center;
+  margin-top: auto;
+}
+.sig-pts.blue   { color: #93C5FD; border-color: rgba(37,99,235,0.3); }
+.sig-pts.gold   { color: #FCD34D; border-color: rgba(245,158,11,0.3); }
+.sig-pts.purple { color: #C4B5FD; border-color: rgba(139,92,246,0.3); }
+.sig-pts.green  { color: #6EE7B7; border-color: rgba(16,185,129,0.3); }
+.sig-pts.red    { color: #FCA5A5; border-color: rgba(220,38,38,0.3); }
+.formula {
+  background: #010409; border: 1px solid #30363D; border-radius: 8px;
+  padding: 14px 24px; font-family: 'Courier New', monospace;
+  font-size: 16px; color: #E6EDF3; text-align: center;
+}
+.formula .plus { color: #3B82F6; margin: 0 4px; }
+.formula .total { color: #10B981; font-weight: 700; }
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Our Approach</span>
+    <span class="slide-num" style="margin-left:auto">04 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:18px">
+    <h2 class="slide-title" style="font-size:28px">EmailThreat fuses <span class="accent">five independent signal layers</span> in a streaming pipeline to produce investigator-grade forensic reports in real time</h2>
+    <div class="signals-grid">
+      <div class="sig-card blue">
+        <div class="sig-icon">🔐</div>
+        <div class="sig-num">SIGNAL 01</div>
+        <div class="sig-name">Authentication</div>
+        <div class="sig-desc">Parse SPF, DKIM, DMARC from Authentication-Results header. Instant — no API call.</div>
+        <div class="sig-pts blue">+20 / +20 / +15 pts</div>
+      </div>
+      <div class="sig-card gold">
+        <div class="sig-icon">🌍</div>
+        <div class="sig-num">SIGNAL 02</div>
+        <div class="sig-name">IP Geolocation</div>
+        <div class="sig-desc">All relay hops traced via ipinfo.io in parallel. Country, ASN, org mapped.</div>
+        <div class="sig-pts gold">Relay trace</div>
+      </div>
+      <div class="sig-card purple">
+        <div class="sig-icon">🤖</div>
+        <div class="sig-num">SIGNAL 03</div>
+        <div class="sig-name">AI Classification</div>
+        <div class="sig-desc">bart-large-mnli zero-shot. Labels: phishing / legitimate. No training data needed.</div>
+        <div class="sig-pts purple">+15 pts if &gt;70%</div>
+      </div>
+      <div class="sig-card green">
+        <div class="sig-icon">📅</div>
+        <div class="sig-num">SIGNAL 04</div>
+        <div class="sig-name">WHOIS Intel</div>
+        <div class="sig-desc">Domain registration age. Newly registered (&lt;30d) lookalike domains flagged. 7-day DB cache.</div>
+        <div class="sig-pts green">+20 pts if &lt;30d</div>
+      </div>
+      <div class="sig-card red">
+        <div class="sig-icon">⚠️</div>
+        <div class="sig-num">SIGNAL 05</div>
+        <div class="sig-name">IP Reputation</div>
+        <div class="sig-desc">AbuseIPDB confidence score on originating IP only. 7-day cache preserves quota.</div>
+        <div class="sig-pts red">+10 pts if &gt;50%</div>
+      </div>
+    </div>
+    <div class="formula">
+      Score&nbsp;=&nbsp;SPF<span class="plus">+</span>DKIM<span class="plus">+</span>DMARC<span class="plus">+</span>DomainAge<span class="plus">+</span>AI<span class="plus">+</span>AbuseIPDB
+      &nbsp;&nbsp;|&nbsp;&nbsp;<span class="total">max = 100 pts</span>
+      &nbsp;&nbsp;|&nbsp;&nbsp;<span style="color:#F59E0B">Floor rule: triple-auth-fail → score ≥ 40</span>
+    </div>
+  </div>
+</div>
+</body></html>

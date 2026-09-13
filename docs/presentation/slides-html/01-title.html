@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="shared.css">
+<style>
+.slide { background: #0D1117; }
+.top-stripe { height: 4px; background: linear-gradient(90deg, #2563EB, #3B82F6, #DC2626); }
+.hero { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 80px; }
+.eyebrow {
+  font-size: 12px; font-weight: 600; letter-spacing: 4px;
+  text-transform: uppercase; color: #3B82F6; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ''; width: 28px; height: 2px; background: #3B82F6; }
+.main-title { font-size: 64px; font-weight: 800; line-height: 1.05; letter-spacing: -2px; margin-bottom: 10px; }
+.main-title .brand { color: #fff; }
+.main-title .sub { color: #3B82F6; }
+.tagline { font-size: 22px; color: #8B949E; font-weight: 400; margin-bottom: 40px; max-width: 640px; line-height: 1.5; }
+.meta { display: flex; gap: 32px; align-items: center; }
+.meta-item { display: flex; flex-direction: column; gap: 3px; }
+.meta-item .label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8B949E; }
+.meta-item .value { font-size: 15px; font-weight: 600; color: #E6EDF3; }
+.meta-sep { width: 1px; height: 36px; background: #30363D; }
+.signal-pills {
+  position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.signal-pill {
+  display: flex; align-items: center; gap: 12px;
+  background: #161B22; border: 1px solid #30363D;
+  border-radius: 10px; padding: 12px 18px; width: 220px;
+}
+.signal-pill .icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.signal-pill .icon.blue { background: rgba(37,99,235,0.2); }
+.signal-pill .icon.red  { background: rgba(220,38,38,0.2); }
+.signal-pill .icon.gold { background: rgba(245,158,11,0.2); }
+.signal-pill .icon.green{ background: rgba(16,185,129,0.2); }
+.signal-pill .icon.purple{ background: rgba(139,92,246,0.2); }
+.signal-pill .pname { font-size: 13px; font-weight: 600; color: #E6EDF3; }
+.signal-pill .pdesc { font-size: 11px; color: #8B949E; }
+.bottom-bar {
+  padding: 14px 80px; border-top: 1px solid #30363D;
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.bottom-bar .ps { font-size: 12px; color: #8B949E; }
+.bottom-bar .live {
+  margin-left: auto; font-size: 12px; color: #3B82F6;
+  display: flex; align-items: center; gap: 6px;
+}
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #10B981; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+</style>
+</head><body>
+<div class="slide">
+  <div class="top-stripe"></div>
+  <div class="hero">
+    <div class="eyebrow">Smart India Hackathon 2026</div>
+    <div class="main-title">
+      <span class="brand">Email</span><span class="sub">Threat</span>
+    </div>
+    <div class="tagline">AI-Powered Email Threat Detection &amp;<br>Forensic Intelligence Platform</div>
+    <div class="meta">
+      <div class="meta-item">
+        <span class="label">Problem Statement</span>
+        <span class="value">PS 26106</span>
+      </div>
+      <div class="meta-sep"></div>
+      <div class="meta-item">
+        <span class="label">Domain</span>
+        <span class="value">Cybersecurity</span>
+      </div>
+      <div class="meta-sep"></div>
+      <div class="meta-item">
+        <span class="label">Date</span>
+        <span class="value">September 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="signal-pills">
+    <div class="signal-pill">
+      <div class="icon blue">🔐</div>
+      <div><div class="pname">Authentication</div><div class="pdesc">SPF · DKIM · DMARC</div></div>
+    </div>
+    <div class="signal-pill">
+      <div class="icon gold">🌍</div>
+      <div><div class="pname">IP Geolocation</div><div class="pdesc">Relay hop trace</div></div>
+    </div>
+    <div class="signal-pill">
+      <div class="icon purple">🤖</div>
+      <div><div class="pname">AI Classification</div><div class="pdesc">Zero-shot NLP</div></div>
+    </div>
+    <div class="signal-pill">
+      <div class="icon green">🔍</div>
+      <div><div class="pname">WHOIS Intel</div><div class="pdesc">Domain age lookup</div></div>
+    </div>
+    <div class="signal-pill">
+      <div class="icon red">⚠️</div>
+      <div><div class="pname">IP Reputation</div><div class="pdesc">AbuseIPDB score</div></div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span class="ps">PS 26106 — EmailThreat: Forensic Intelligence Platform</span>
+    <span class="live"><span class="live-dot"></span>Live at sih2026-email-threat.vercel.app</span>
+  </div>
+</div>
+</body></html>

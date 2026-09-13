@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.demo-body { display: flex; gap: 22px; flex: 1; margin-top: 14px; }
+.left { width: 460px; display: flex; flex-direction: column; gap: 10px; }
+.right { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.sse-stream { display: flex; flex-direction: column; gap: 6px; }
+.sse-line {
+  background: #010409; border: 1px solid #30363D; border-radius: 6px;
+  padding: 9px 14px; font-family: 'Courier New', monospace; font-size: 12px;
+  line-height: 1.4; display: flex; align-items: flex-start; gap: 8px;
+}
+.sse-line.final { border-color: rgba(220,38,38,0.5); background: rgba(220,38,38,0.06); }
+.sse-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.sse-line .k { color: #79C0FF; }
+.sse-line .v { color: #A5D6FF; }
+.sse-line .vok  { color: #56d364; }
+.sse-line .verr { color: #FF7B72; }
+.sse-line .vwarn{ color: #d29922; }
+
+.timing-bar {
+  background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 16px;
+}
+.timing-bar .time { font-size: 36px; font-weight: 900; color: #10B981; letter-spacing: -1px; }
+.timing-bar .tdesc { font-size: 14px; color: #C9D1D9; line-height: 1.4; }
+.timing-bar .tdesc strong { color: #6EE7B7; }
+
+.finding-table { width: 100%; }
+.ftrow { display: flex; border-bottom: 1px solid rgba(48,54,61,0.5); }
+.ftrow:last-child { border-bottom: none; }
+.ftrow.header .ftcell { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8B949E; padding: 6px 12px; }
+.ftcell { padding: 9px 12px; font-size: 14px; color: #C9D1D9; }
+.ftcell:first-child { width: 140px; color: #8B949E; flex-shrink: 0; font-size: 12px; font-weight: 600; }
+.ftrow.hl .ftcell { color: #FCA5A5; font-weight: 700; background: rgba(220,38,38,0.05); }
+.ftrow.hl2 .ftcell { color: #FCD34D; }
+
+.verdict-big {
+  background: rgba(220,38,38,0.12); border: 1.5px solid rgba(220,38,38,0.35);
+  border-radius: 10px; padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.verdict-big .v-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #FCA5A5; margin-bottom: 4px; }
+.verdict-big .v-name { font-size: 28px; font-weight: 800; color: #EF4444; }
+.verdict-big .v-score { font-size: 52px; font-weight: 900; color: #EF4444; letter-spacing: -2px; line-height: 1; }
+.verdict-big .v-max { font-size: 16px; color: #8B949E; font-weight: 400; }
+
+.url-highlight {
+  background: #010409; border: 1px solid #30363D; border-radius: 6px;
+  padding: 8px 12px; font-family: 'Courier New', monospace; font-size: 12px; color: #FCA5A5;
+}
+</style>
+</head><body>
+<div class="slide">
+  <div class="header-bar">
+    <span class="section-label" style="margin:0">Live End-to-End Test</span>
+    <span class="slide-num" style="margin-left:auto">11 / 13</span>
+    <span class="brand" style="margin-left:16px"><span class="dot"></span>EmailThreat</span>
+  </div>
+  <div class="content-area" style="padding-top:14px">
+    <h2 class="slide-title" style="font-size:26px">End-to-end analysis of a real phishing email completed in <span class="accent">under 30 seconds</span> — verdict: <span class="danger">Fraudulent, 65/100</span></h2>
+    <div class="demo-body">
+      <div class="left">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8B949E;">SSE stream (live)</div>
+        <div class="sse-stream">
+          <div class="sse-line"><div class="sse-dot" style="background:#3B82F6"></div><span><span class="k">"step"</span>: <span class="v">"headers"</span>, <span class="k">"spf"</span>: <span class="verr">"fail"</span>, <span class="k">"dkim"</span>: <span class="verr">"fail"</span>, <span class="k">"dmarc"</span>: <span class="verr">"fail"</span>, <span class="k">"hopCount"</span>: <span class="vok">1</span></span></div>
+          <div class="sse-line"><div class="sse-dot" style="background:#10B981"></div><span><span class="k">"step"</span>: <span class="v">"geolocation"</span>, <span class="k">"status"</span>: <span class="vok">"done"</span>, <span class="k">"hops"</span>: <span class="vok">1</span></span></div>
+          <div class="sse-line"><div class="sse-dot" style="background:#F59E0B"></div><span><span class="k">"step"</span>: <span class="v">"classification"</span>, <span class="k">"status"</span>: <span class="vwarn">"unavailable"</span>, <span class="k">"score"</span>: <span class="vwarn">null</span></span></div>
+          <div class="sse-line"><div class="sse-dot" style="background:#10B981"></div><span><span class="k">"step"</span>: <span class="v">"whois"</span>, <span class="k">"status"</span>: <span class="vok">"done"</span>, <span class="k">"ageDays"</span>: <span class="vwarn">null</span></span></div>
+          <div class="sse-line"><div class="sse-dot" style="background:#EF4444"></div><span><span class="k">"step"</span>: <span class="v">"reputation"</span>, <span class="k">"status"</span>: <span class="vok">"done"</span>, <span class="k">"abuseScore"</span>: <span class="verr">100</span></span></div>
+          <div class="sse-line final"><div class="sse-dot" style="background:#DC2626"></div><span><span class="k">"step"</span>: <span class="v">"complete"</span>, <span class="k">"verdict"</span>: <span class="verr">"Fraudulent"</span>, <span class="k">"score"</span>: <span class="verr">65</span></span></div>
+        </div>
+        <div class="timing-bar">
+          <div class="time">&lt;30s</div>
+          <div class="tdesc"><strong>End-to-end pipeline time</strong><br>From .eml paste to verdict + PDF available</div>
+        </div>
+        <div class="url-highlight">IOC — Phishing URL extracted:<br>http://paypa1-verify.com/secure/login?cmd=_account-verify&amp;token=ABC123XYZ</div>
+      </div>
+      <div class="right">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8B949E;">Forensic findings</div>
+        <div class="finding-table">
+          <div class="ftrow header"><div class="ftcell">Field</div><div class="ftcell">Value</div></div>
+          <div class="ftrow"><div class="ftcell">Sender domain</div><div class="ftcell" style="font-family:monospace;font-size:13px">paypa1-verify.com</div></div>
+          <div class="ftrow"><div class="ftcell">Originating IP</div><div class="ftcell" style="font-family:monospace;font-size:13px">185.220.101.47</div></div>
+          <div class="ftrow hl2"><div class="ftcell">IP type</div><div class="ftcell">Tor exit node (dan.me.uk)</div></div>
+          <div class="ftrow"><div class="ftcell">Country / ASN</div><div class="ftcell">Germany (DE)</div></div>
+          <div class="ftrow hl"><div class="ftcell">AbuseIPDB</div><div class="ftcell">100% confidence score</div></div>
+          <div class="ftrow hl"><div class="ftcell">Auth (SPF/DKIM/DMARC)</div><div class="ftcell">fail / fail / fail</div></div>
+          <div class="ftrow"><div class="ftcell">AI classification</div><div class="ftcell" style="color:#F59E0B">Unavailable (cold start)</div></div>
+          <div class="ftrow"><div class="ftcell">WHOIS age</div><div class="ftcell" style="color:#8B949E">null (new TLD)</div></div>
+          <div class="ftrow"><div class="ftcell">Score breakdown</div><div class="ftcell">SPF(20)+DKIM(20)+DMARC(15)+Abuse(10) = 65</div></div>
+        </div>
+        <div class="verdict-big">
+          <div>
+            <div class="v-label">Verdict</div>
+            <div class="v-name">FRAUDULENT</div>
+          </div>
+          <div style="text-align:right">
+            <div class="v-score">65<span class="v-max">/100</span></div>
+          </div>
+        </div>
+        <div style="background:#161B22;border:1px solid #30363D;border-radius:8px;padding:10px 14px;font-size:13px;color:#8B949E;line-height:1.5;">
+          PDF forensic report available at <code style="color:#93C5FD;font-family:monospace">/api/report/&lt;id&gt;</code> — 8 sections including Executive Summary, Authentication, Geolocation Trace, IOCs, Campaign Attribution.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

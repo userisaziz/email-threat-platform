@@ -2,6 +2,11 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Upload, Loader2, Shield, ShieldAlert, ShieldCheck, FileText, RotateCcw } from "lucide-react";
 
 type StepStatus = "pending" | "running" | "done" | "unavailable" | "error";
 
@@ -21,18 +26,28 @@ const INITIAL_STEPS: Step[] = [
   { id: "complete", label: "Saving results", status: "pending" },
 ];
 
-function statusIcon(s: StepStatus) {
-  if (s === "pending") return <span className="text-gray-600">○</span>;
-  if (s === "running") return <span className="text-yellow-400 animate-pulse">◌</span>;
-  if (s === "done") return <span className="text-green-400">✓</span>;
-  if (s === "unavailable") return <span className="text-yellow-500">~</span>;
-  if (s === "error") return <span className="text-red-400">✗</span>;
+function StepIcon({ status }: { status: StepStatus }) {
+  if (status === "running") return <Loader2 className="w-3.5 h-3.5 text-yellow-400 animate-spin" />;
+  if (status === "done") return <span className="w-3.5 h-3.5 text-green-400 text-sm leading-none">✓</span>;
+  if (status === "unavailable") return <span className="w-3.5 h-3.5 text-yellow-500 text-sm leading-none">~</span>;
+  if (status === "error") return <span className="w-3.5 h-3.5 text-red-400 text-sm leading-none">✗</span>;
+  return <span className="w-3.5 h-3.5 text-gray-700 text-sm leading-none">○</span>;
 }
 
-function verdictColor(verdict: string) {
-  if (verdict === "Fraudulent") return "text-red-400 border-red-500/40 bg-red-500/10";
-  if (verdict === "Suspicious") return "text-yellow-400 border-yellow-500/40 bg-yellow-500/10";
-  return "text-green-400 border-green-500/40 bg-green-500/10";
+function VerdictIcon({ verdict }: { verdict: string }) {
+  if (verdict === "Fraudulent") return <ShieldAlert className="w-6 h-6 text-red-400" />;
+  if (verdict === "Suspicious") return <Shield className="w-6 h-6 text-yellow-400" />;
+  return <ShieldCheck className="w-6 h-6 text-green-400" />;
+}
+
+function verdictVariant(verdict: string): "destructive" | "warning" | "success" {
+  if (verdict === "Fraudulent") return "destructive";
+  if (verdict === "Suspicious") return "warning";
+  return "success";
+}
+
+function completedSteps(steps: Step[]) {
+  return steps.filter((s) => s.status === "done" || s.status === "unavailable").length;
 }
 
 export default function AnalyzeForm() {
@@ -56,21 +71,11 @@ export default function AnalyzeForm() {
   }
 
   function updateStep(id: string, patch: Partial<Step>) {
-    setSteps((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...patch } : s))
-    );
+    setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   }
 
   function markRunning(id: string) {
-    setSteps((prev) =>
-      prev.map((s) =>
-        s.id === id
-          ? { ...s, status: "running" }
-          : s.status === "pending"
-          ? s
-          : s
-      )
-    );
+    setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, status: "running" } : s)));
   }
 
   async function handleAnalyze() {
@@ -95,16 +100,13 @@ export default function AnalyzeForm() {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
-
         const parts = buffer.split("\n\n");
         buffer = parts.pop() ?? "";
-
         for (const part of parts) {
           const line = part.replace(/^data:\s*/, "");
           if (!line) continue;
           try {
-            const event = JSON.parse(line);
-            handleEvent(event);
+            handleEvent(JSON.parse(line));
           } catch {}
         }
       }
@@ -117,12 +119,7 @@ export default function AnalyzeForm() {
 
   function handleEvent(event: Record<string, unknown>) {
     const step = event.step as string;
-
-    if (step === "error") {
-      setErrorMsg(event.message as string);
-      return;
-    }
-
+    if (step === "error") { setErrorMsg(event.message as string); return; }
     if (step === "complete") {
       updateStep("complete", { status: "done" });
       setResult({
@@ -133,30 +130,20 @@ export default function AnalyzeForm() {
       });
       return;
     }
-
-    const status =
-      event.status === "unavailable" ? "unavailable" : "done";
-
+    const status = event.status === "unavailable" ? "unavailable" : "done";
     if (step === "headers") {
-      updateStep("headers", {
-        status,
-        detail: `${event.hopCount} hops | SPF:${event.spf} DKIM:${event.dkim} DMARC:${event.dmarc}`,
-      });
+      updateStep("headers", { status, detail: `${event.hopCount} hops · SPF:${event.spf} DKIM:${event.dkim} DMARC:${event.dmarc}` });
       markRunning("geolocation");
     } else if (step === "geolocation") {
-      updateStep("geolocation", { status, detail: `${event.hops} public IPs geolocated` });
-      markRunning("classification");
-      markRunning("whois");
+      updateStep("geolocation", { status, detail: `${event.hops} IPs geolocated` });
+      markRunning("classification"); markRunning("whois");
     } else if (step === "classification") {
-      const score = event.score != null ? `${((event.score as number) * 100).toFixed(0)}% phishing` : "n/a";
-      updateStep("classification", { status, detail: score });
+      updateStep("classification", { status, detail: event.score != null ? `${((event.score as number) * 100).toFixed(0)}% phishing confidence` : "unavailable" });
     } else if (step === "whois") {
-      const age = event.ageDays != null ? `domain ${event.ageDays}d old` : "age unknown";
-      updateStep("whois", { status, detail: age });
+      updateStep("whois", { status, detail: event.ageDays != null ? `domain age: ${event.ageDays}d` : "age unknown" });
       markRunning("reputation");
     } else if (step === "reputation") {
-      const score = event.abuseScore != null ? `AbuseIPDB: ${event.abuseScore}%` : "n/a";
-      updateStep("reputation", { status, detail: score });
+      updateStep("reputation", { status, detail: event.abuseScore != null ? `AbuseIPDB: ${event.abuseScore}%` : "n/a" });
       markRunning("complete");
     }
   }
@@ -164,118 +151,114 @@ export default function AnalyzeForm() {
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const text = await file.text();
-    setEml(text);
+    setEml(await file.text());
   }
+
+  const progress = running ? Math.round((completedSteps(steps) / steps.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white mb-1">Email Threat Analysis</h1>
         <p className="text-gray-400 text-sm">
-          Paste raw .eml content or upload an .eml file to detect phishing, trace relay hops, and correlate campaigns.
+          Paste raw .eml content or upload a file to detect phishing, trace relay hops, and correlate attack campaigns.
         </p>
       </div>
 
-      <div className="space-y-3">
-        <textarea
-          value={eml}
-          onChange={(e) => setEml(e.target.value)}
-          placeholder={"Paste raw .eml content here...\n\nX-Google-DKIM-Signature: v=1; a=rsa-sha256...\nReceived: from mail.example.com..."}
-          className="w-full h-48 bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-sm font-mono text-gray-200 placeholder-gray-600 focus:outline-none focus:border-red-500/60 resize-none"
-        />
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleAnalyze}
-            disabled={running || !eml.trim()}
-            className="px-5 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            {running ? "Analyzing..." : "Analyze Email"}
-          </button>
-
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm rounded-lg transition-colors border border-gray-700"
-          >
-            Upload .eml
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".eml,message/rfc822"
-            className="hidden"
-            onChange={handleFileUpload}
+      <Card>
+        <CardContent className="pt-5 space-y-4">
+          <textarea
+            value={eml}
+            onChange={(e) => setEml(e.target.value)}
+            placeholder={"Paste raw .eml content here...\n\nReceived: from mail.example.com ([1.2.3.4])\nAuthentication-Results: mx.example.com;\n  spf=fail; dkim=fail; dmarc=fail\n\nSubject: Urgent: Verify your account"}
+            className="w-full h-48 bg-gray-950 border border-gray-700 rounded-lg px-4 py-3 text-sm font-mono text-gray-200 placeholder-gray-600 focus:outline-none focus:border-red-500/60 resize-none"
           />
-
-          {eml && (
-            <button
-              onClick={() => { setEml(""); resetState(); }}
-              className="text-sm text-gray-500 hover:text-gray-300 transition-colors ml-auto"
-            >
-              Clear
-            </button>
-          )}
-        </div>
-      </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Button onClick={handleAnalyze} disabled={running || !eml.trim()}>
+              {running ? <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</> : "Analyze Email"}
+            </Button>
+            <Button variant="secondary" onClick={() => fileRef.current?.click()}>
+              <Upload className="w-4 h-4" /> Upload .eml
+            </Button>
+            <input ref={fileRef} type="file" accept=".eml,message/rfc822" className="hidden" onChange={handleFileUpload} />
+            {eml && (
+              <Button variant="ghost" size="sm" className="ml-auto" onClick={() => { setEml(""); resetState(); }}>
+                <RotateCcw className="w-3.5 h-3.5" /> Clear
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {(running || result || errorMsg) && (
-        <div className="border border-gray-800 rounded-lg bg-gray-900 p-5 space-y-3">
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Analysis Progress</p>
-          <div className="space-y-2">
-            {steps.map((s) => (
-              <div key={s.id} className="flex items-center gap-3 text-sm">
-                <span className="w-4 text-center shrink-0">{statusIcon(s.status)}</span>
-                <span className={s.status === "pending" ? "text-gray-600" : "text-gray-300"}>
-                  {s.label}
-                </span>
-                {s.detail && (
-                  <span className="text-gray-500 text-xs ml-auto shrink-0">{s.detail}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Analysis Pipeline</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {running && <Progress value={progress} className="h-1.5" />}
+            <div className="space-y-2.5">
+              {steps.map((s) => (
+                <div key={s.id} className="flex items-center gap-3 text-sm">
+                  <StepIcon status={s.status} />
+                  <span className={s.status === "pending" ? "text-gray-600" : "text-gray-300"}>
+                    {s.label}
+                  </span>
+                  {s.detail && (
+                    <span className="text-gray-500 text-xs ml-auto font-mono">{s.detail}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {errorMsg && (
-        <div className="border border-red-800 bg-red-950/40 rounded-lg p-4 text-sm text-red-300">
-          {errorMsg}
-        </div>
+        <Card className="border-red-800 bg-red-950/30">
+          <CardContent className="pt-4 text-sm text-red-300">{errorMsg}</CardContent>
+        </Card>
       )}
 
       {result && (
-        <div className={`border rounded-lg p-5 ${verdictColor(result.verdict)}`}>
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-1">Verdict</p>
-              <p className="text-2xl font-bold">{result.verdict}</p>
+        <Card className={
+          result.verdict === "Fraudulent"
+            ? "border-red-500/40 bg-red-950/20"
+            : result.verdict === "Suspicious"
+            ? "border-yellow-500/40 bg-yellow-950/20"
+            : "border-green-500/40 bg-green-950/20"
+        }>
+          <CardContent className="pt-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <VerdictIcon verdict={result.verdict} />
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Verdict</p>
+                  <p className="text-xl font-bold text-white">{result.verdict}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Fraud Score</p>
+                <p className="text-4xl font-black text-white">{result.score}<span className="text-sm text-gray-500 font-normal">/100</span></p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-1">Fraud Score</p>
-              <p className="text-3xl font-bold">{result.score}</p>
+
+            {result.duplicate && (
+              <p className="text-xs text-gray-500 mb-4">Previously analyzed — showing cached result.</p>
+            )}
+
+            <div className="flex gap-3 flex-wrap">
+              <Button onClick={() => router.push(`/result/${result.emailId}`)}>
+                View Full Report
+              </Button>
+              <Button variant="secondary" asChild>
+                <a href={`/api/report/${result.emailId}`}>
+                  <FileText className="w-4 h-4" /> Download PDF
+                </a>
+              </Button>
             </div>
-          </div>
-
-          {result.duplicate && (
-            <p className="text-xs opacity-60 mb-3">This email was previously analyzed — showing cached result.</p>
-          )}
-
-          <div className="flex gap-3 mt-4">
-            <button
-              onClick={() => router.push(`/result/${result.emailId}`)}
-              className="text-sm px-4 py-2 rounded-lg border border-current bg-current/10 hover:bg-current/20 transition-colors font-medium"
-            >
-              View Full Report
-            </button>
-            <a
-              href={`/api/report/${result.emailId}`}
-              className="text-sm px-4 py-2 rounded-lg border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400 transition-colors"
-            >
-              Download PDF
-            </a>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
